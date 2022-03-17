@@ -2,7 +2,7 @@ const express = require("express");
 var bodyParser = require("body-parser");
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(bodyParser.json());
 
@@ -31,6 +31,21 @@ const herois = [
 
 app.get("/herois", function (req, res) {
   res.send(herois);
+});
+
+//---x---
+const getMensagemValida = () => {
+  return herois.filter(Boolean);
+};
+const getMensagemByID = id => {
+  return getMensagemValida().find((msg) => msg.id === id);
+};
+//---x---
+//GET by ID
+app.get("/herois/:id", function (req, res) {
+  const id = +req.params.id ; 
+  const mensagem = getMensagemByID(id);
+  res.send(mensagem);
 });
 
 app.listen(port, function () {
