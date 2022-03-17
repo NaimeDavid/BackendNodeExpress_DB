@@ -1,5 +1,6 @@
 const express = require("express");
 var bodyParser = require("body-parser");
+const { json } = require("express/lib/response");
 
 const app = express();
 const port = 3001;
@@ -37,14 +38,23 @@ app.get("/herois", function (req, res) {
 const getMensagemValida = () => {
   return herois.filter(Boolean);
 };
-const getMensagemByID = id => {
+const getMensagemByID = (id) => {
   return getMensagemValida().find((msg) => msg.id === id);
 };
 //---x---
 //GET by ID
 app.get("/herois/:id", function (req, res) {
-  const id = +req.params.id ; 
+  const id = +req.params.id;
   const mensagem = getMensagemByID(id);
+  res.send(mensagem);
+});
+
+//POST
+app.post("/herois", function (req, res) {
+  const mensagem = req.body;
+  mensagem.id = herois.length;
+  herois.push(mensagem);
+
   res.send(mensagem);
 });
 
