@@ -30,10 +30,6 @@ const herois = [
   },
 ];
 
-app.get("/herois", function (req, res) {
-  res.send(herois);
-});
-
 //---x---
 const getMensagemValida = () => {
   return herois.filter(Boolean);
@@ -42,6 +38,12 @@ const getMensagemByID = (id) => {
   return getMensagemValida().find((msg) => msg.id === id);
 };
 //---x---
+
+//GET all
+app.get("/herois", function (req, res) {
+  res.send(herois.filter(Boolean));
+});
+
 //GET by ID
 app.get("/herois/:id", function (req, res) {
   const id = +req.params.id;
@@ -56,6 +58,17 @@ app.post("/herois", function (req, res) {
   herois.push(mensagem);
 
   res.send(mensagem);
+});
+
+//DELETE
+app.delete("/herois/:id", function (req, res) {
+  const id = +req.params.id;
+  const mensagem = getMensagemByID(id);
+  const index = herois.indexOf(mensagem);
+
+  delete herois[index];
+
+  res.send("Mensagem deletada");
 });
 
 app.listen(port, function () {
