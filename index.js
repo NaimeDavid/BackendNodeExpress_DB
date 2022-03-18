@@ -48,6 +48,7 @@ app.get("/herois", function (req, res) {
 app.get("/herois/:id", function (req, res) {
   const id = +req.params.id;
   const mensagem = getMensagemByID(id);
+
   res.send(mensagem);
 });
 
@@ -55,9 +56,9 @@ app.get("/herois/:id", function (req, res) {
 app.post("/herois", function (req, res) {
   const mensagem = req.body;
   mensagem.id = herois.length;
-  herois.push(mensagem);
 
-  res.send(mensagem);
+  herois.push(mensagem);
+  res.send("Item adicionado com sucesso.");
 });
 
 //DELETE
@@ -67,8 +68,17 @@ app.delete("/herois/:id", function (req, res) {
   const index = herois.indexOf(mensagem);
 
   delete herois[index];
+  res.send("Mensagem deletada.");
+});
 
-  res.send("Mensagem deletada");
+//UPDATE - troca o nome do heroi pelo ID
+app.put("/herois/:id", function (req, res) {
+  const id = +req.params.id;
+  const mensagem = getMensagemByID(id);
+  const newHero = req.body.heroi;
+
+  mensagem.heroi = newHero;
+  res.send("Herói atualizado");
 });
 
 app.listen(port, function () {
