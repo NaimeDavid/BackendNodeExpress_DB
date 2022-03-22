@@ -32,12 +32,12 @@ async function main() {
   ];
 
   //---x---
-  const getMensagemValida = () => {
-    return herois.filter(Boolean);
-  };
-  const getMensagemByID = (id) => {
-    return getMensagemValida().find((msg) => msg.id === id);
-  };
+  // const getMensagemValida = () => {
+  //   return herois.filter(Boolean);
+  // };
+  // const getMensagemByID = (id) => {
+  //   return getMensagemValida().find((msg) => msg.id === id);
+  // };
   //---x---
 
   //GET all
@@ -55,32 +55,38 @@ async function main() {
   });
 
   //POST
-  app.post("/herois", function (req, res) {
-    const mensagem = req.body;
-    mensagem.id = herois.length;
+  app.post("/herois", async function (req, res) {
+    const novo_heroi = req.body;
 
-    herois.push(mensagem);
-    res.send("Item adicionado com sucesso.");
+    await collection.insertOne(novo_heroi);
+
+    res.send(novo_heroi);
   });
 
   //DELETE
-  app.delete("/herois/:id", function (req, res) {
-    const id = +req.params.id;
-    const mensagem = getMensagemByID(id);
-    const index = herois.indexOf(mensagem);
+  app.delete("/herois/:id", async function (req, res) {
+    const id = req.params.id;
 
-    delete herois[index];
+    await collection.deleteOne({ _id: ObjectId(id) });
+
     res.send("Herói deletado.");
   });
 
-  //UPDATE - troca o nome do heroi pelo ID
+  //UPDATE 
   app.put("/herois/:id", function (req, res) {
-    const id = +req.params.id;
-    const mensagem = getMensagemByID(id);
-    const newHero = req.body.heroi;
+    const id = req.params.id;
 
-    mensagem.heroi = newHero;
-    res.send("Herói atualizado");
+    const novo_heroi = req.body;
+
+    collection.updateOne(
+      { _id: ObjectId(id) },
+
+      {
+        $set: novo_heroi,
+      }
+    );
+
+    res.send(novo_heroi);
   });
 
   app.listen(port, function () {
