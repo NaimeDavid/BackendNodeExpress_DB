@@ -1,86 +1,89 @@
 const express = require("express");
+const { MongoClient, ObjectId } = require("mongodb");
+
+const url = "mongodb://localhost:27017";
+const dbname = "herois_22_03_2022";
+
 var bodyParser = require("body-parser");
 const { json } = require("express/lib/response");
 
-const app = express();
-const port = 3001;
+async function main() {
+  console.log("Conectando ao banco de dados...");
+  const client = await MongoClient.connect(url);
+  const db = client.db(dbname);
+  const collection = db.collection("herois");
 
-app.use(bodyParser.json());
+  console.log("Conexão com o banco de dados realizada com sucesso!");
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+  const app = express();
+  const port = 3001;
 
-const herois = [
-  {
-    id: 0,
-    heroi: "Thor",
-  },
-  {
-    id: 1,
-    heroi: "Diana",
-  },
-  {
-    id: 2,
-    heroi: "Peter Parker",
-  },
-  {
-    id: 3,
-    heroi: "Chapolin Colorado",
-  },
-];
+  app.use(bodyParser.json());
 
-//---x---
-const getMensagemValida = () => {
-  return herois.filter(Boolean);
-};
-const getMensagemByID = (id) => {
-  return getMensagemValida().find((msg) => msg.id === id);
-};
-//---x---
+  app.get("/", (req, res) => {
+    res.send("Hello World");
+  });
 
-//GET all
-app.get("/herois", function (req, res) {
-  res.send(herois.filter(Boolean));
-});
+  const herois = [
+    {
+      id: 0,
+      heroi: "Thor",
+    },
+  ];
 
-//GET by ID
-app.get("/herois/:id", function (req, res) {
-  const id = +req.params.id;
-  const mensagem = getMensagemByID(id);
+  //---x---
+  const getMensagemValida = () => {
+    return herois.filter(Boolean);
+  };
+  const getMensagemByID = (id) => {
+    return getMensagemValida().find((msg) => msg.id === id);
+  };
+  //---x---
 
-  res.send(mensagem);
-});
+  //GET all
+  app.get("/herois", function (req, res) {
+    res.send(herois.filter(Boolean));
+  });
 
-//POST
-app.post("/herois", function (req, res) {
-  const mensagem = req.body;
-  mensagem.id = herois.length;
+  //GET by ID
+  app.get("/herois/:id", function (req, res) {
+    const id = +req.params.id;
+    const mensagem = getMensagemByID(id);
 
-  herois.push(mensagem);
-  res.send("Item adicionado com sucesso.");
-});
+    res.send(mensagem);
+  });
 
-//DELETE
-app.delete("/herois/:id", function (req, res) {
-  const id = +req.params.id;
-  const mensagem = getMensagemByID(id);
-  const index = herois.indexOf(mensagem);
+  //POST
+  app.post("/herois", function (req, res) {
+    const mensagem = req.body;
+    mensagem.id = herois.length;
 
-  delete herois[index];
-  res.send("Mensagem deletada.");
-});
+    herois.push(mensagem);
+    res.send("Item adicionado com sucesso.");
+  });
 
-//UPDATE - troca o nome do heroi pelo ID
-app.put("/herois/:id", function (req, res) {
-  const id = +req.params.id;
-  const mensagem = getMensagemByID(id);
-  const newHero = req.body.heroi;
+  //DELETE
+  app.delete("/herois/:id", function (req, res) {
+    const id = +req.params.id;
+    const mensagem = getMensagemByID(id);
+    const index = herois.indexOf(mensagem);
 
-  mensagem.heroi = newHero;
-  res.send("Herói atualizado");
-});
+    delete herois[index];
+    res.send("Herói deletado.");
+  });
 
-app.listen(port, function () {
-  console.log(`App rodando em http://localhost:${port}`);
-});
+  //UPDATE - troca o nome do heroi pelo ID
+  app.put("/herois/:id", function (req, res) {
+    const id = +req.params.id;
+    const mensagem = getMensagemByID(id);
+    const newHero = req.body.heroi;
+
+    mensagem.heroi = newHero;
+    res.send("Herói atualizado");
+  });
+
+  app.listen(port, function () {
+    console.log(`App rodando em http://localhost:${port}`);
+  });
+}
+main();
