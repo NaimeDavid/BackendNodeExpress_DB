@@ -41,8 +41,10 @@ async function main() {
   //---x---
 
   //GET all
-  app.get("/herois", function (req, res) {
-    res.send(herois.filter(Boolean));
+  app.get("/herois", async function (req, res) {
+    
+    const docs = await collection.find().toArray();
+    res.send(docs);
   });
 
   //GET by ID
