@@ -42,17 +42,16 @@ async function main() {
 
   //GET all
   app.get("/herois", async function (req, res) {
-    
     const docs = await collection.find().toArray();
     res.send(docs);
   });
 
   //GET by ID
-  app.get("/herois/:id", function (req, res) {
-    const id = +req.params.id;
-    const mensagem = getMensagemByID(id);
+  app.get("/herois/:id", async function (req, res) {
+    const id = req.params.id;
+    const item = await collection.findOne({ _id: new ObjectId(id) });
 
-    res.send(mensagem);
+    res.send(item);
   });
 
   //POST
